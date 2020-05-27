@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
 
 	public float weapon_tilty;
 	float weapon_lerpy;
+
     void Start()
     {
 		cc = GetComponent<CharacterController>();
@@ -94,15 +95,21 @@ public class Player : MonoBehaviour
 		transform.GetChild(0).transform.localRotation = Quaternion.Euler(pitch);
 
 		//--------------------------------Headbob animation-------------------------------------------
-		transform.GetChild(0).localPosition = new Vector3(0, bobStart + (bobAmplitude * Mathf.Sin(bobPhase * Time.time) * (curSpeed / maxSpeed)), 0);
+		if(isGrounded())
+			transform.GetChild(0).localPosition = new Vector3(0, bobStart + (bobAmplitude * Mathf.Sin(bobPhase * Time.time) * (curSpeed / maxSpeed)), 0);
 
 
 		//-------------------------------Weapon animation---------------------------------------------
-		weapon_lerpx = Mathf.Lerp(weapon_lerpx, Input.GetAxisRaw("Mouse X") * weapon_tiltX, 3f * Time.deltaTime);
-		weapon_lerpy = Mathf.Lerp(weapon_lerpy, Input.GetAxisRaw("Mouse Y") * weapon_tilty, 3f * Time.deltaTime);
-		transform.GetChild(0).GetChild(0).localRotation = Quaternion.Euler(weapon_lerpy,180 + weapon_lerpx,0);
 
+		WeaponManager wm = GetComponent<WeaponManager>();
+		if (wm)
+		{
+			GameObject current = wm.weapons[wm.active];
+			weapon_lerpx = Mathf.Lerp(weapon_lerpx, Input.GetAxisRaw("Mouse X") * weapon_tiltX, 6f * Time.deltaTime);
+			weapon_lerpy = Mathf.Lerp(weapon_lerpy, Input.GetAxisRaw("Mouse Y") * weapon_tilty, 6f * Time.deltaTime);
+			current.transform.localRotation = Quaternion.Euler(weapon_lerpy, 180 + weapon_lerpx, 0);
 
+		}
 		
 		
 	}
